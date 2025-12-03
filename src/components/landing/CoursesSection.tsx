@@ -12,6 +12,7 @@ import CourseCard from "./CourseCard";
 import { Product } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import MobileCourseList from "./MobileCourseList";
 
 // Các bộ lọc này khớp chính xác với các giá trị `level` mà chúng ta đã map trong src/lib/api.ts
 const filters = ["Tất cả trình độ", "Tiêu chuẩn", "Mở rộng", "Nâng cao"];
@@ -96,28 +97,7 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
               transition={{ duration: 0.2 }}
             >
               {isMobile ? (
-                // Mobile: Vertical List
-                <div className="space-y-4">
-                  {filteredCourses.length > 0 ? (
-                    filteredCourses.map((course, index) => (
-                      <motion.div 
-                        key={course.id}
-                        className="h-full" 
-                        variants={itemVariants} 
-                        initial="hidden" 
-                        animate="visible"
-                        custom={index}
-                        transition={{ duration: 0.4, delay: index * 0.05 }}
-                      >
-                        <CourseCard product={course} />
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="w-full text-center py-12 text-gray-500">
-                      Không tìm thấy khóa học nào phù hợp với tiêu chí này.
-                    </div>
-                  )}
-                </div>
+                <MobileCourseList courses={filteredCourses} />
               ) : (
                 // Desktop: Carousel
                 <Carousel opts={{ align: "start" }} className="w-full mx-auto">
