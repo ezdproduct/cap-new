@@ -3,15 +3,43 @@ import { notFound } from 'next/navigation';
 import CourseHero from '@/components/course/CourseHero';
 import CoursePurchaseCard from '@/components/course/CoursePurchaseCard';
 import CourseContentTabs from '@/components/course/CourseContentTabs';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-type ProductPageProps = {
+type Props = {
   params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const product = await getProductBySlug(params.slug);
+
+  if (!product) {
+    return {
+      title: "Course Not Found",
+      description: "The course you are looking for could not be found.",
+    };
+  }
+
+  return {
+    title: `${product.name} - CAP English`,
+    description: product.short_description,
+    openGraph: {
+      title: product.name,
+      description: product.short_description,
+      images: [
+        {
+          url: product.images[0]?.src || '',
+          width: 1200,
+          height: 630,
+          alt: product.name,
+        },
+      ],
+    },
+  };
+}
+
+export default async function ProductPage({ params }: Props) {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {

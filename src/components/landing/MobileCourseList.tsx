@@ -2,7 +2,7 @@
 
 import { Product } from "@/lib/types";
 import { motion } from "framer-motion";
-import CourseCard from "./CourseCard";
+import MobileCourseCard from "./MobileCourseCard";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -34,7 +34,7 @@ export default function MobileCourseList({ courses }: MobileCourseListProps) {
           custom={index}
           transition={{ duration: 0.4, delay: index * 0.05 }}
         >
-          <CourseCard product={course} />
+          <MobileCourseCard product={course} />
         </motion.div>
       ))}
     </div>
