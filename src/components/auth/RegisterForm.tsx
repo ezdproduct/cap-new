@@ -30,10 +30,8 @@ export default function RegisterForm() {
     const loadingToast = toast.loading("Đang tạo tài khoản...");
 
     try {
-      // LƯU Ý: Endpoint này yêu cầu plugin "WP REST User" hoặc tương tự
-      // được cài đặt và kích hoạt trên trang WordPress của bạn.
       const res = await fetch(
-        "https://course.learnwithcap.com/wp-json/wp/v2/users/register",
+        "https://course.learnwithcap.com/wp-json/custom-sso/v1/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

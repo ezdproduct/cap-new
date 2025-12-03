@@ -6,7 +6,12 @@ import CourseContentTabs from '@/components/course/CourseContentTabs';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+type ProductPageProps = {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {
