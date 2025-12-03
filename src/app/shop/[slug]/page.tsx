@@ -7,14 +7,11 @@ import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-type PageProps = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {
@@ -44,7 +41,9 @@ export async function generateMetadata({
 
 export default async function ProductPage({
   params,
-}: PageProps) {
+}: {
+  params: { slug: string };
+}) {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {
