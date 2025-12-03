@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,46 +17,46 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const loadingToast = toast.loading("Đang đăng nhập...");
+    const loadingToast = toast.loading("Đang tạo tài khoản...");
 
     try {
+      // LƯU Ý: Endpoint này yêu cầu plugin "WP REST User" hoặc tương tự
+      // được cài đặt và kích hoạt trên trang WordPress của bạn.
       const res = await fetch(
-        "https://course.learnwithcap.com/wp-json/jwt-auth/v1/token",
+        "https://course.learnwithcap.com/wp-json/wp/v2/users/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ username, email, password }),
         }
       );
 
       const data = await res.json();
 
-      if (data.token) {
-        toast.success("Đăng nhập thành công! Đang chuyển hướng...", {
+      if (res.ok && (data.code === 200 || data.id)) {
+        toast.success("Đăng ký thành công! Vui lòng đăng nhập.", {
           id: loadingToast,
         });
-        localStorage.setItem("wp_token", data.token);
-
-        // Redirect sang WordPress để auto login
-        window.location.href =
-          "https://course.learnwithcap.com/wp-json/custom-sso/v1/login?token=" +
-          data.token;
+        router.push("/login");
       } else {
-        // Ném lỗi để block catch xử lý
-        throw new Error(data.message || "Tên đăng nhập hoặc mật khẩu không đúng.");
+        const message = data.message ? data.message.replace(/<[^>]*>?/gm, '') : "Đã xảy ra lỗi không xác định.";
+        throw new Error(message);
       }
     } catch (error: any) {
-      toast.error(error.message || "Đã xảy ra lỗi. Vui lòng thử lại.", {
+      toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.", {
         id: loadingToast,
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -63,21 +64,33 @@ export default function LoginForm() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Đăng nhập</CardTitle>
+        <CardTitle className="text-2xl">Đăng ký tài khoản</CardTitle>
         <CardDescription>
-          Nhập thông tin tài khoản của bạn để tiếp tục.
+          Tạo tài khoản mới để bắt đầu học ngay.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleRegister}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Tên đăng nhập hoặc Email</Label>
+            <Label htmlFor="username">Tên đăng nhập</Label>
             <Input
               id="username"
-              placeholder="Nhập tên đăng nhập"
+              placeholder="Chọn tên đăng nhập"
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="email@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
             />
           </div>
@@ -86,7 +99,7 @@ export default function LoginForm() {
             <Input
               id="password"
               type="password"
-              placeholder="Nhập mật khẩu"
+              placeholder="Tạo mật khẩu"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -97,12 +110,12 @@ export default function LoginForm() {
         <CardFooter className="flex flex-col gap-4">
           <Button className="w-full" type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Đăng nhập
+            Đăng ký
           </Button>
           <p className="text-sm text-center text-gray-600">
-            Chưa có tài khoản?{" "}
-            <Link href="/register" className="font-medium text-cap-purple hover:underline">
-              Đăng ký ngay
+            Đã có tài khoản?{" "}
+            <Link href="/login" className="font-medium text-cap-purple hover:underline">
+              Đăng nhập ngay
             </Link>
           </p>
         </CardFooter>
