@@ -1,35 +1,35 @@
 import { Product, Category, PaymentGateway } from './types';
 
 // --- Constants & Config ---
-// Sử dụng URL và Auth Header trực tiếp từ thử nghiệm thành công của bạn
 const TUTOR_API_URL = "https://course.learnwithcap.com/wp-json/tutor/v1/courses";
-// Header này giải mã ra key/secret bạn đã cung cấp
-const AUTH_HEADER = "Basic a2V5XzkxZGFhNTIyZjU1ZjZiNDFiYzdlZmE3Mzk1MWY4ZDU2OnNlY3JldF9lNjJmYTc2MDNlNjFhN2ZkM2YyZWQ1NWJmZjdkNDExZmUxZmE2MzU5MWNlY2ZmZWFlYjU1ZDg5NDkwYzk1MzEy";
 
-// Sử dụng biến môi trường phía máy chủ cho WooCommerce
+// Sử dụng biến môi trường phía máy chủ
+const TUTOR_LMS_KEY = process.env.TUTOR_LMS_KEY;
+const TUTOR_LMS_SECRET = process.env.TUTOR_LMS_SECRET;
 const WC_URL = process.env.WOOCOMMERCE_URL;
 const WC_KEY = process.env.WOOCOMMERCE_KEY;
 const WC_SECRET = process.env.WOOCOMMERCE_SECRET;
 
-// --- Helper for Auth (WooCommerce only) ---
-const createWcAuthHeader = (key: string | undefined, secret: string | undefined) => {
-  if (!key || !secret) return '';
+// --- Helper for Auth ---
+const createAuthHeader = (key: string, secret: string) => {
   return 'Basic ' + Buffer.from(`${key}:${secret}`).toString('base64');
 };
 
 // --- Fetchers ---
 
 async function fetchTutorLMS(params: string) {
-  try {
-    // Kết hợp URL gốc với params (ví dụ: ?page=1&per_page=20)
-    const url = `${TUTOR_API_URL}${params}`;
+  if (!TUTOR_LMS_KEY || !TUTOR_LMS_SECRET) {
+    console.error("Tutor LMS API credentials are not configured in .env.local");
+    return null;
+  }
 
+  try {
+    const url = `${TUTOR_API_URL}${params}`;
     const res = await fetch(url, {
       headers: {
-        'Authorization': AUTH_HEADER,
+        'Authorization': createAuthHeader(TUTOR_LMS_KEY, TUTOR_LMS_SECRET),
         'Content-Type': 'application/json',
       },
-      // Revalidate mỗi 60 giây để dữ liệu không bị cache quá lâu
       next: { revalidate: 60 },
     });
 
@@ -50,7 +50,7 @@ async function fetchWooCommerce(endpoint: string) {
   try {
     const res = await fetch(`${WC_URL}${endpoint}`, {
       headers: {
-        'Authorization': createWcAuthHeader(WC_KEY, WC_SECRET),
+        'Authorization': createAuthHeader(WC_KEY, WC_SECRET),
       },
       next: { revalidate: 3600 },
     });

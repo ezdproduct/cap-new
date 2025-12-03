@@ -15,11 +15,6 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'secure.gravatar.com',
       },
-      // Cho phép load ảnh từ bất kỳ nguồn nào trong quá trình dev (tuỳ chọn)
-      {
-        protocol: 'https',
-        hostname: '**',
-      }
     ],
   },
   webpack: (config) => {
