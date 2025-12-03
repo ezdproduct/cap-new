@@ -15,11 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/auth";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const setToken = useAuthStore((state) => state.setToken);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +41,10 @@ export default function LoginForm() {
       const data = await res.json();
 
       if (data.token) {
+        setToken(data.token);
         toast.success("Đăng nhập thành công! Đang chuyển hướng...", {
           id: loadingToast,
         });
-        localStorage.setItem("wp_token", data.token);
 
         // Redirect sang WordPress để auto login
         window.location.href =

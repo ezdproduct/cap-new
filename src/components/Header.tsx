@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, ShoppingCart } from "lucide-react";
+import { Menu, ShoppingCart, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -12,9 +12,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import MiniCart from "@/components/MiniCart";
 import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const navItems = [
   { name: "Khóa học", href: "/shop" },
@@ -26,44 +37,38 @@ const LOGIN_URL = "/login";
 export default function Header() {
   const pathname = usePathname();
   const { totalItems: cartCount } = useCart();
+  const { isAuthenticated, user, logout } = useAuth();
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [isVisible, setIsVisible] = React.useState(true);
 
-  // Chỉ trang Order Confirmation và trang chi tiết khóa học là header tĩnh (relative)
-  // Lưu ý: '/shop' là trang danh sách (giữ sticky), '/shop/slug' là chi tiết (static)
   const isStaticHeaderPage = pathname?.startsWith("/order-confirmation") || (pathname?.startsWith("/shop/") && pathname !== "/shop");
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Bạn đã đăng xuất thành công.");
+  };
 
   React.useEffect(() => {
     const handleScroll = () => {
-      // Nếu là trang static, không cần tính toán ẩn/hiện
       if (isStaticHeaderPage) return;
-
-      // Logic riêng cho Trang Chủ (Home)
       if (pathname === "/") {
         const solutionsSection = document.getElementById("solutions");
         if (solutionsSection) {
           const rect = solutionsSection.getBoundingClientRect();
-          // Nếu phần Solutions trượt lên gần top (đã qua phần Courses), ẩn header
-          // Sử dụng offset 80px (khoảng chiều cao header + một chút đệm)
           if (rect.top <= 80) {
             setIsVisible(false);
           } else {
             setIsVisible(true);
           }
         } else {
-          // Fallback nếu không tìm thấy section (luôn hiện)
           setIsVisible(true);
         }
       } else {
-        // Các trang khác (Shop, Cart...): Luôn Sticky
         setIsVisible(true);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
-    // Gọi ngay một lần để set state đúng khi mới load/reload trang
     handleScroll();
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname, isStaticHeaderPage]);
 
@@ -71,7 +76,6 @@ export default function Header() {
     <header
       className={cn(
         "z-50 w-full bg-white shadow-sm",
-        // Static header cho trang Order Confirmation và Detail
         isStaticHeaderPage
           ? "relative"
           : cn(
@@ -81,7 +85,6 @@ export default function Header() {
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-        {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
             src="https://learnwithcap.com/wp-content/uploads/2025/06/cap-logo-1.png"
@@ -93,11 +96,9 @@ export default function Header() {
           />
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-1 bg-gray-100 p-1 rounded-full group">
           {navItems.map((item) => {
             const NavComponent = item.href.startsWith('/#') ? 'a' : Link;
-
             return (
               <NavComponent
                 key={item.name}
@@ -110,11 +111,8 @@ export default function Header() {
           })}
         </nav>
 
-        {/* CTA & Mobile Menu */}
         <div className="flex items-center space-x-2">
           <div className="hidden md:flex items-center space-x-2">
-
-            {/* Cart Button */}
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -136,13 +134,40 @@ export default function Header() {
               </PopoverContent>
             </Popover>
 
-            <Link href={LOGIN_URL}>
-              <Button
-                className="bg-cap-dark-blue hover:bg-cap-purple text-white rounded-md transition-colors text-base px-4 py-1.5 h-auto"
-              >
-                Đăng nhập
-              </Button>
-            </Link>
+            {isAuthenticated && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                    <Avatar className="h-9 w-9">
+                      <AvatarFallback className="bg-cap-purple text-white">{user.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Tài khoản</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Đăng xuất</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href={LOGIN_URL}>
+                <Button className="bg-cap-dark-blue hover:bg-cap-purple text-white rounded-md transition-colors text-base px-4 py-1.5 h-auto">
+                  Đăng nhập
+                </Button>
+              </Link>
+            )}
           </div>
 
           <div className="md:hidden">
@@ -166,10 +191,18 @@ export default function Header() {
                       </NavComponent>
                     )
                   })}
-                  <Link href={LOGIN_URL}>
-                    <Button className="w-full bg-cap-dark-blue hover:bg-cap-purple text-white transition-colors">Đăng nhập</Button>
-                  </Link>
-
+                  <div className="border-t !mt-6 !mb-2"></div>
+                  {isAuthenticated && user ? (
+                    <>
+                      <div className="font-semibold px-1">{user.displayName}</div>
+                      <Button variant="ghost" className="justify-start -mx-2"><User className="mr-2 h-4 w-4" /> Tài khoản</Button>
+                      <Button onClick={handleLogout} variant="ghost" className="justify-start -mx-2 text-red-500 hover:text-red-600"><LogOut className="mr-2 h-4 w-4" /> Đăng xuất</Button>
+                    </>
+                  ) : (
+                    <Link href={LOGIN_URL}>
+                      <Button className="w-full bg-cap-dark-blue hover:bg-cap-purple text-white transition-colors">Đăng nhập</Button>
+                    </Link>
+                  )}
                   <Button variant="outline" className="w-full flex items-center justify-center" asChild>
                     <Link href="/cart">
                       <ShoppingCart className="h-5 w-5 mr-2" />
