@@ -21,8 +21,6 @@ const navItems = [
   { name: "Giải Pháp", href: "/#solutions" },
 ];
 
-const LOGIN_URL = "https://course.learnwithcap.com/tai-khoan/";
-
 export default function Header() {
   const pathname = usePathname();
   const { totalItems: cartCount } = useCart();
@@ -136,13 +134,12 @@ export default function Header() {
               </PopoverContent>
             </Popover>
 
-            <a href={LOGIN_URL} target="_blank" rel="noopener noreferrer">
-              <Button
-                className="bg-cap-dark-blue hover:bg-cap-purple text-white rounded-md transition-colors text-base px-4 py-1.5 h-auto"
-              >
-                Đăng nhập
-              </Button>
-            </a>
+            <Button
+              asChild
+              className="bg-cap-dark-blue hover:bg-cap-purple text-white rounded-md transition-colors text-base px-4 py-1.5 h-auto"
+            >
+              <Link href="/login">Đăng nhập</Link>
+            </Button>
           </div>
 
           <div className="md:hidden">
@@ -166,9 +163,9 @@ export default function Header() {
                       </NavComponent>
                     )
                   })}
-                  <a href={LOGIN_URL} target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full bg-cap-dark-blue hover:bg-cap-purple text-white transition-colors">Đăng nhập</Button>
-                  </a>
+                  <Button asChild className="w-full bg-cap-dark-blue hover:bg-cap-purple text-white transition-colors">
+                    <Link href="/login">Đăng nhập</Link>
+                  </Button>
 
                   <Button variant="outline" className="w-full flex items-center justify-center" asChild>
                     <Link href="/cart">
