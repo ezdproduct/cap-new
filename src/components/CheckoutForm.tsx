@@ -10,6 +10,7 @@ import { useCart } from "@/hooks/useCart";
 import Link from "next/link";
 import { Loader2, Lock, CreditCard } from "lucide-react";
 import { PaymentGateway } from "@/lib/types";
+import { useAuthStore } from "@/store/auth";
 
 interface CheckoutFormProps {
   paymentGateways: PaymentGateway[];
@@ -22,6 +23,7 @@ export default function CheckoutForm({ paymentGateways }: CheckoutFormProps) {
     paymentGateways.length > 0 ? paymentGateways[0].id : ''
   );
   const router = useRouter();
+  const setToken = useAuthStore((state) => state.setToken);
 
   if (items.length === 0 && !isLoading) {
     return (
@@ -68,7 +70,14 @@ export default function CheckoutForm({ paymentGateways }: CheckoutFormProps) {
         throw new Error(result.message || 'Something went wrong');
       }
 
-      toast.success('Đặt hàng thành công!');
+      // Check for token and auto-login
+      if (result.token) {
+        setToken(result.token);
+        toast.success('Đặt hàng thành công! Một tài khoản đã được tạo và bạn đã tự động đăng nhập.');
+      } else {
+        toast.success('Đặt hàng thành công!');
+      }
+      
       clearCart();
       router.push(`/order-success?order_id=${result.order.id}`);
 
