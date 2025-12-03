@@ -16,15 +16,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 // Các bộ lọc này khớp chính xác với các giá trị `level` mà chúng ta đã map trong src/lib/api.ts
 const filters = ["Tất cả trình độ", "Tiêu chuẩn", "Mở rộng", "Nâng cao"];
 
-// Helper function to chunk an array into smaller arrays
-function chunk<T>(array: T[], size: number): T[][] {
-  const chunked_arr: T[][] = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunked_arr.push(array.slice(i, i + size));
-  }
-  return chunked_arr;
-}
-
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
@@ -47,9 +38,6 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
       const button = container.children[index] as HTMLElement;
 
       if (button) {
-        // Tính toán vị trí để đưa button về giữa container
-        // Browser sẽ tự động giới hạn scroll (không vượt quá 0 hoặc maxScroll)
-        // nên tab đầu và tab cuối sẽ tự động dính vào mép thay vì ra giữa (đúng yêu cầu)
         const containerWidth = container.clientWidth;
         const buttonWidth = button.clientWidth;
         const buttonLeft = button.offsetLeft;
@@ -64,7 +52,6 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
     }
   };
 
-  // Lọc dữ liệu thật từ Backend dựa trên tab đang chọn
   const filteredCourses = useMemo(() => {
     return courses.filter(
       (course) =>
@@ -72,13 +59,10 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
     );
   }, [courses, activeFilter]);
 
-  // Logic hiển thị cho mobile: 2 thẻ/slide
-  const mobileCourseChunks = useMemo(() => chunk(filteredCourses, 2), [filteredCourses]);
-
   return (
     <section id="courses" className="bg-white">
       <div className="container mx-auto px-4 md:px-8">
-        {/* Filters UI - Giống 100% app mẫu */}
+        {/* Filters UI */}
         <div className="flex justify-center my-8 md:my-12">
           <div 
             ref={tabsRef}
@@ -101,7 +85,7 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
           </div>
         </div>
 
-        {/* Carousel Area */}
+        {/* Content Area */}
         <div className="pb-8 md:pb-16">
           <AnimatePresence mode="wait">
             <motion.div
@@ -111,22 +95,34 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <Carousel opts={{ align: "start" }} className="w-full mx-auto">
-                <CarouselContent className="-ml-2 md:-ml-4">
+              {isMobile ? (
+                // Mobile: Vertical List
+                <div className="space-y-4">
                   {filteredCourses.length > 0 ? (
-                     isMobile ? (
-                      mobileCourseChunks.map((chunk, index) => (
-                        <CarouselItem key={index} className="basis-full pl-2 md:pl-4">
-                          <div className="grid grid-cols-2 gap-2">
-                            {chunk.map((course) => (
-                               <motion.div key={course.id} className="h-full" variants={itemVariants} initial="hidden" animate="visible">
-                                 <CourseCard product={course} />
-                               </motion.div>
-                            ))}
-                          </div>
-                        </CarouselItem>
-                      ))
-                    ) : (
+                    filteredCourses.map((course, index) => (
+                      <motion.div 
+                        key={course.id}
+                        className="h-full" 
+                        variants={itemVariants} 
+                        initial="hidden" 
+                        animate="visible"
+                        custom={index}
+                        transition={{ duration: 0.4, delay: index * 0.05 }}
+                      >
+                        <CourseCard product={course} />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="w-full text-center py-12 text-gray-500">
+                      Không tìm thấy khóa học nào phù hợp với tiêu chí này.
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Desktop: Carousel
+                <Carousel opts={{ align: "start" }} className="w-full mx-auto">
+                  <CarouselContent className="-ml-2 md:-ml-4">
+                    {filteredCourses.length > 0 ? (
                       filteredCourses.map((course, index) => (
                         <CarouselItem
                           key={course.id}
@@ -144,16 +140,18 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
                           </motion.div>
                         </CarouselItem>
                       ))
-                    )
-                  ) : (
-                      <div className="w-full text-center py-12 text-gray-500 col-span-full">
+                    ) : (
+                      <CarouselItem className="w-full">
+                        <div className="w-full text-center py-12 text-gray-500">
                           Không tìm thấy khóa học nào phù hợp với tiêu chí này.
-                      </div>
-                  )}
-                </CarouselContent>
-                <CarouselPrevious className="hidden md:flex -left-12 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 text-gray-800 h-10 w-10" />
-                <CarouselNext className="hidden md:flex -right-12 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 text-gray-800 h-10 w-10" />
-              </Carousel>
+                        </div>
+                      </CarouselItem>
+                    )}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden md:flex -left-12 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 text-gray-800 h-10 w-10" />
+                  <CarouselNext className="hidden md:flex -right-12 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 text-gray-800 h-10 w-10" />
+                </Carousel>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
