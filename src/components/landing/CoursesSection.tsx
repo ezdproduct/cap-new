@@ -72,8 +72,8 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
     );
   }, [courses, activeFilter]);
 
-  // Logic hiển thị cho mobile: 1 thẻ/slide
-  const mobileCourseChunks = useMemo(() => chunk(filteredCourses, 1), [filteredCourses]);
+  // Logic hiển thị cho mobile: 2 thẻ/slide
+  const mobileCourseChunks = useMemo(() => chunk(filteredCourses, 2), [filteredCourses]);
 
   return (
     <section id="courses" className="bg-white">
@@ -117,9 +117,9 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
                      isMobile ? (
                       mobileCourseChunks.map((chunk, index) => (
                         <CarouselItem key={index} className="basis-full pl-2 md:pl-4">
-                          <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-2">
                             {chunk.map((course) => (
-                               <motion.div key={course.id} className="p-1 h-full" variants={itemVariants} initial="hidden" animate="visible">
+                               <motion.div key={course.id} className="h-full" variants={itemVariants} initial="hidden" animate="visible">
                                  <CourseCard product={course} />
                                </motion.div>
                             ))}
