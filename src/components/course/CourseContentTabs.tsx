@@ -10,9 +10,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import DOMPurify from 'isomorphic-dompurify';
 
 const CourseContentTabs = ({ product }: { product: Product }) => {
-  const sanitizedDescription = product.description;
+  const sanitizedDescription = DOMPurify.sanitize(product.description);
 
   return (
     <Tabs defaultValue="overview" className="w-full">
