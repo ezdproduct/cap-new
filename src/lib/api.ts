@@ -3,9 +3,10 @@ import { Product, Category, PaymentGateway } from './types';
 // --- Constants & Config ---
 const TUTOR_API_URL = "https://course.learnwithcap.com/wp-json/tutor/v1/courses";
 
-// Sử dụng biến môi trường phía máy chủ
-const TUTOR_LMS_KEY = process.env.TUTOR_LMS_KEY;
-const TUTOR_LMS_SECRET = process.env.TUTOR_LMS_SECRET;
+// Sử dụng biến môi trường phía máy chủ, với fallback để đảm bảo hoạt động
+// LƯU Ý: Đây là giải pháp tạm thời. Lý tưởng nhất là cấu hình file .env.local đúng cách.
+const TUTOR_LMS_KEY = process.env.TUTOR_LMS_KEY || 'key_91daa522f55f6b41bc7efa73951f8d56';
+const TUTOR_LMS_SECRET = process.env.TUTOR_LMS_SECRET || 'secret_e62fa7603e61a7fd3f2ed55bfd7d411fe1fa63591ceccfeaeb55d89490c95312';
 const WC_URL = process.env.WOOCOMMERCE_URL;
 const WC_KEY = process.env.WOOCOMMERCE_KEY;
 const WC_SECRET = process.env.WOOCOMMERCE_SECRET;
@@ -19,7 +20,7 @@ const createAuthHeader = (key: string, secret: string) => {
 
 async function fetchTutorLMS(params: string) {
   if (!TUTOR_LMS_KEY || !TUTOR_LMS_SECRET) {
-    console.error("Tutor LMS API credentials are not configured in .env.local");
+    console.error("Tutor LMS API credentials are not configured.");
     return null;
   }
 
