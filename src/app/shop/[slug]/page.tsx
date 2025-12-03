@@ -1,20 +1,17 @@
 import { getProductBySlug } from '@/lib/api';
 import { notFound } from 'next/navigation';
-import NewCourseHero from '@/components/course/NewCourseHero';
-import NewCoursePurchaseCard from '@/components/course/NewCoursePurchaseCard';
-import CourseMainContent from '@/components/course/CourseMainContent';
+import CourseHero from '@/components/course/CourseHero';
+import CoursePurchaseCard from '@/components/course/CoursePurchaseCard';
+import CourseContentTabs from '@/components/course/CourseContentTabs';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-type PageProps = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {
@@ -44,7 +41,9 @@ export async function generateMetadata({
 
 export default async function ProductPage({
   params,
-}: PageProps) {
+}: {
+  params: { slug: string };
+}) {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {
@@ -52,22 +51,21 @@ export default async function ProductPage({
   }
 
   return (
-    <div className="font-sans text-[#374151] bg-[#f9fafb] min-h-screen">
-      <NewCourseHero product={product} />
-
-      <div className="max-w-[1200px] mx-auto px-4 pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative">
-          
-          {/* Left Content Column */}
-          <div className="lg:col-span-8 pt-12">
-            <CourseMainContent product={product} />
+    <div className="bg-gray-50/50">
+      <CourseHero product={product} />
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-12">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <CourseContentTabs product={product} />
           </div>
 
-          {/* Right Sidebar Column - Floating Overlap */}
-          <div className="lg:col-span-4 relative z-20 lg:-mt-[220px]">
-            <NewCoursePurchaseCard product={product} />
+          {/* Sidebar */}
+          <div className="relative mt-8 lg:mt-0">
+            <div className="lg:sticky lg:top-24">
+              <CoursePurchaseCard product={product} />
+            </div>
           </div>
-
         </div>
       </div>
     </div>
