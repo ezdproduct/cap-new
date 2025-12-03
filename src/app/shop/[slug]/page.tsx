@@ -7,17 +7,17 @@ import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-type Props = {
+export async function generateMetadata({
+  params,
+}: {
   params: { slug: string };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+}): Promise<Metadata> {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {
     return {
-      title: "Course Not Found",
-      description: "The course you are looking for could not be found.",
+      title: 'Course Not Found',
+      description: 'The course you are looking for could not be found.',
     };
   }
 
@@ -39,7 +39,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const product = await getProductBySlug(params.slug);
 
   if (!product) {

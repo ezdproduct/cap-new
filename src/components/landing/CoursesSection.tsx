@@ -64,7 +64,7 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
     <section id="courses" className="bg-white">
       <div className="container mx-auto px-4 md:px-8">
         {/* Filters UI */}
-        <div className="flex justify-center my-8 md:my-12">
+        <div className="sticky md:static top-0 z-10 bg-white py-6 md:py-0 flex justify-center md:my-12">
           <div 
             ref={tabsRef}
             className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-2 bg-gray-50 p-1.5 rounded-full overflow-x-auto max-w-full no-scrollbar" 
