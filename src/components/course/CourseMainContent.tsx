@@ -53,9 +53,9 @@ const CourseMainContent = ({ product }: { product: Product }) => {
 
   return (
     <div className="space-y-12">
-      {product.benefits && product.benefits.length > 0 && (
-        <div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Lợi ích khóa học:</h3>
+      <div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">Lợi ích khóa học:</h3>
+        {product.benefits && product.benefits.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {product.benefits.map((benefit, index) => (
               <div key={index} className="flex p-4 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -64,20 +64,30 @@ const CourseMainContent = ({ product }: { product: Product }) => {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center text-gray-500 text-sm">
+            <p>Nội dung đang được cập nhật.</p>
+          </div>
+        )}
+      </div>
 
       <div>
         <h3 className="text-2xl font-bold text-gray-900 mb-6">Giới thiệu tổng quan</h3>
-        <div
-          className="prose max-w-none text-gray-700 leading-relaxed bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-          dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-        />
+        {sanitizedDescription ? (
+          <div
+            className="prose max-w-none text-gray-700 leading-relaxed bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+            dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+          />
+        ) : (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center text-gray-500 text-sm">
+            <p>Nội dung đang được cập nhật.</p>
+          </div>
+        )}
       </div>
 
-      {product.curriculum && product.curriculum.length > 0 && (
-        <div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Nội dung khóa học</h3>
+      <div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">Nội dung khóa học</h3>
+        {product.curriculum && product.curriculum.length > 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             {product.curriculum.map((topic) => (
               <AccordionItem 
@@ -88,12 +98,16 @@ const CourseMainContent = ({ product }: { product: Product }) => {
               />
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center text-gray-500 text-sm">
+            <p>Nội dung đang được cập nhật.</p>
+          </div>
+        )}
+      </div>
 
-      {product.tags && product.tags.length > 0 && (
-        <div>
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Từ khóa phổ biến:</h3>
+      <div>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Từ khóa phổ biến:</h3>
+        {product.tags && product.tags.length > 0 ? (
           <div className="flex flex-wrap">
             {product.tags.map((tag, idx) => (
               <a key={idx} href="#" className="bg-white border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 mr-2 mb-2 hover:border-cap-purple hover:text-cap-purple hover:bg-purple-50 hover:-translate-y-px hover:shadow-sm">
@@ -101,8 +115,12 @@ const CourseMainContent = ({ product }: { product: Product }) => {
               </a>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center text-gray-500 text-sm">
+            <p>Chưa có từ khóa nào.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
