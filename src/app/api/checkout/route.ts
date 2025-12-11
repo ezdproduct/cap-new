@@ -60,12 +60,15 @@ export async function POST(req: Request) {
     // --- 2. Handle User Registration & Login ---
     let jwtToken = null;
     const userEmail = billingDetails.email;
+    console.log('[Checkout] Checking if user exists:', userEmail);
 
     // Check if user exists
     const userCheckResponse = await fetch(`${API_URL}/wp-json/wp/v2/users?email=${encodeURIComponent(userEmail)}`, { headers: { 'Authorization': auth } });
     const existingUsers = await userCheckResponse.json();
+    console.log('[Checkout] User check result:', existingUsers);
 
     if (Array.isArray(existingUsers) && existingUsers.length === 0) {
+      console.log('[Checkout] User not found. Creating new user...');
       // User does not exist, create a new one
       const newPassword = generateRandomPassword();
       const username = userEmail.split('@')[0] + Date.now().toString().slice(-4); // Create a unique username
@@ -83,18 +86,27 @@ export async function POST(req: Request) {
         }),
       });
 
+      const newUserResult = await newUserResponse.json();
+      console.log('[Checkout] New user creation status:', newUserResponse.status, newUserResult);
+
       if (newUserResponse.ok) {
         // New user created, now get a token for them
+        console.log('[Checkout] Getting JWT token...');
         const tokenResponse = await fetch(`${API_URL}/wp-json/jwt-auth/v1/token`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: username, password: newPassword }),
         });
         const tokenData = await tokenResponse.json();
+        console.log('[Checkout] Token response:', tokenData);
         if (tokenData.token) {
           jwtToken = tokenData.token;
         }
+      } else {
+        console.error('[Checkout] Failed to create user:', newUserResult);
       }
+    } else {
+      console.log('[Checkout] User already exists. Skipping registration.');
     }
 
     return NextResponse.json({ success: true, order: orderResult, token: jwtToken }, { status: 201 });
