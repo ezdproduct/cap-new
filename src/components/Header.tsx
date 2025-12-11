@@ -114,28 +114,28 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center space-x-2">
-          <div className="hidden md:flex items-center space-x-2">
-            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Shopping Cart"
-                  className="relative text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                >
-                  <ShoppingCart className="h-6 w-6" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-cap-purple text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-96 p-0" align="end">
-                <MiniCart onClose={() => setPopoverOpen(false)} />
-              </PopoverContent>
-            </Popover>
+          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Shopping Cart"
+                className="relative text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-cap-purple text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-96 p-0" align="end">
+              <MiniCart onClose={() => setPopoverOpen(false)} />
+            </PopoverContent>
+          </Popover>
 
+          <div className="hidden md:flex items-center">
             {isAuthenticated && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -210,12 +210,6 @@ export default function Header() {
                       <Button className="w-full bg-cap-dark-blue hover:bg-cap-purple text-white transition-colors">Đăng nhập</Button>
                     </Link>
                   )}
-                  <Button variant="outline" className="w-full flex items-center justify-center" asChild>
-                    <Link href="/cart">
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      Giỏ hàng ({cartCount})
-                    </Link>
-                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
