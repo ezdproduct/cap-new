@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { WP_API_ENDPOINTS } from "@/lib/wp-api-endpoints";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Copy } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ApiTestPage() {
   const [response, setResponse] = useState("");
@@ -18,7 +22,7 @@ export default function ApiTestPage() {
     if (placeholders) {
       for (const placeholder of placeholders) {
         const key = placeholder.replace(/[{}]/g, "");
-        const value = prompt(`Enter value for "${key}":`);
+        const value = prompt(`Nhập giá trị cho "${key}":`);
         if (value === null) {
           setLoading(false);
           return;
@@ -50,58 +54,76 @@ export default function ApiTestPage() {
     setLoading(false);
   };
 
-  return (
-    <div style={{ padding: 20, fontFamily: "sans-serif", color: "#333" }}>
-      <h1 style={{ borderBottom: "1px solid #eee", paddingBottom: 10 }}>LearnWithCap – API Test Console</h1>
+  const copyToClipboard = () => {
+    if (response) {
+      navigator.clipboard.writeText(response);
+      toast.success("Đã sao chép kết quả vào clipboard!");
+    }
+  };
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
+  return (
+    <div className="container mx-auto p-4 md:p-8 bg-gray-50 min-h-screen">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-cap-dark-blue">LearnWithCap – API Test Console</h1>
+        <p className="text-gray-500">Giao diện để kiểm tra các API endpoint của WordPress.</p>
+      </header>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {WP_API_ENDPOINTS.map((group) => (
-          <div key={group.group} style={{ background: "#f9f9f9", padding: 20, borderRadius: 8, border: "1px solid #eee" }}>
-            <h2 style={{ marginTop: 0, borderBottom: "1px solid #ddd", paddingBottom: 8, marginBottom: 16 }}>{group.group}</h2>
-            {group.endpoints.map((ep) => (
-              <button
-                key={ep.name}
-                onClick={() => callApi(ep.url, ep.method)}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "left",
-                  margin: "8px 0",
-                  padding: "10px 15px",
-                  background: "#002A4C",
-                  color: "white",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                  border: "none",
-                  fontSize: 14,
-                }}
-              >
-                <span style={{ background: ep.method === 'GET' ? '#59B4E9' : '#671D9D', padding: '2px 6px', borderRadius: 4, marginRight: 8, fontSize: 12 }}>{ep.method}</span>
-                {ep.name}
-              </button>
-            ))}
-          </div>
+          <Card key={group.group} className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg text-cap-navy">{group.group}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {group.endpoints.map((ep) => (
+                <Button
+                  key={ep.name}
+                  onClick={() => callApi(ep.url, ep.method)}
+                  variant="outline"
+                  className="w-full justify-start text-left h-auto py-2"
+                  disabled={loading}
+                >
+                  <span className={`mr-2 font-mono text-xs px-1.5 py-0.5 rounded ${ep.method === 'GET' ? 'bg-sky-100 text-sky-800' : 'bg-purple-100 text-purple-800'}`}>
+                    {ep.method}
+                  </span>
+                  <span className="flex-1 text-sm truncate">{ep.name}</span>
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <h2 style={{ marginTop: 40 }}>Kết Quả:</h2>
-      {loading && <div>⏳ Loading...</div>}
-      {currentUrl && !loading && <p style={{ fontSize: 12, color: '#666', wordBreak: 'break-all' }}>URL: <code>{currentUrl}</code></p>}
-      <pre
-        style={{
-          background: "#111",
-          color: "#0f0",
-          padding: 20,
-          borderRadius: 10,
-          marginTop: 10,
-          maxHeight: 600,
-          overflow: "auto",
-          whiteSpace: "pre-wrap",
-          wordBreak: "break-all"
-        }}
-      >
-        {response || "Response will be shown here..."}
-      </pre>
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-cap-dark-blue mb-4">Kết Quả API</h2>
+        {loading && (
+          <div className="flex items-center text-gray-500">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Đang tải...
+          </div>
+        )}
+        {currentUrl && !loading && (
+          <p className="text-sm text-gray-600 bg-gray-100 p-2 rounded-md mb-4 break-all">
+            <span className="font-semibold">URL:</span> <code>{currentUrl}</code>
+          </p>
+        )}
+        <div className="relative">
+          <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 rounded-lg overflow-auto max-h-[600px] w-full">
+            <code>{response || "Kết quả sẽ được hiển thị ở đây..."}</code>
+          </pre>
+          {response && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={copyToClipboard}
+              className="absolute top-3 right-3 text-gray-400 hover:text-white hover:bg-gray-700"
+              aria-label="Copy response"
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
