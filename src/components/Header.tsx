@@ -151,9 +151,11 @@ export default function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Tài khoản</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Tài khoản</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -196,7 +198,11 @@ export default function Header() {
                   {isAuthenticated && user ? (
                     <>
                       <div className="font-semibold px-1">{displayName}'s HUB</div>
-                      <Button variant="ghost" className="justify-start -mx-2"><User className="mr-2 h-4 w-4" /> Tài khoản</Button>
+                      <Button variant="ghost" className="justify-start -mx-2" asChild>
+                        <Link href="/profile">
+                          <User className="mr-2 h-4 w-4" /> Tài khoản
+                        </Link>
+                      </Button>
                       <Button onClick={handleLogout} variant="ghost" className="justify-start -mx-2 text-red-500 hover:text-red-600"><LogOut className="mr-2 h-4 w-4" /> Đăng xuất</Button>
                     </>
                   ) : (
