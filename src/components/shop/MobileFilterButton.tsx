@@ -17,16 +17,12 @@ interface MobileFilterButtonProps {
   filters: FilterState;
   selectedFilters: FilterState;
   onFilterChange: (type: keyof FilterState, value: string) => void;
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
 }
 
 const MobileFilterButton: React.FC<MobileFilterButtonProps> = ({
   filters,
   selectedFilters,
   onFilterChange,
-  searchTerm,
-  onSearchChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,7 +33,7 @@ const MobileFilterButton: React.FC<MobileFilterButtonProps> = ({
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="w-auto flex items-center justify-center">
+        <Button variant="outline" className="w-auto flex items-center justify-center flex-shrink-0 h-10">
           <Filter className="w-4 h-4 mr-2" />
           Bộ lọc
         </Button>
@@ -51,8 +47,8 @@ const MobileFilterButton: React.FC<MobileFilterButtonProps> = ({
             filters={filters}
             selectedFilters={selectedFilters}
             onFilterChange={onFilterChange}
-            searchTerm={searchTerm}
-            onSearchChange={onSearchChange}
+            searchTerm="" // Search is handled outside now
+            onSearchChange={() => {}} // No-op
             onApply={handleApply}
           />
         </div>

@@ -75,7 +75,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
   return (
     <aside className="p-4 lg:p-0 lg:sticky lg:top-24 bg-white rounded-xl lg:bg-transparent self-start">
-      <div className="relative mb-6">
+      {/* Search input is now outside for mobile, but we keep it here for desktop */}
+      <div className={cn("relative mb-6", onApply ? "hidden" : "block")}>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Tìm kiếm khóa học..."

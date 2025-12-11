@@ -5,6 +5,7 @@ import { Product } from "@/lib/types";
 import FilterSidebar from "@/components/shop/FilterSidebar";
 import ProductGrid from "@/components/ProductGrid";
 import MobileFilterButton from "@/components/shop/MobileFilterButton";
+import MobileSearchInput from "@/components/shop/MobileSearchInput";
 import {
   Pagination,
   PaginationContent,
@@ -156,11 +157,13 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
 
   return (
     <div className="container mx-auto px-6 pb-8 pt-24 bg-white min-h-screen">
-      <div className="lg:hidden mb-6">
+      <div className="lg:hidden mb-6 flex items-center gap-4">
         <MobileFilterButton
           filters={availableFilters}
           selectedFilters={selectedFilters}
           onFilterChange={handleFilterChange}
+        />
+        <MobileSearchInput 
           searchTerm={searchTerm}
           onSearchChange={handleSearchChange}
         />
