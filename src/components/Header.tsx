@@ -77,7 +77,7 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "z-50 w-full bg-white shadow-sm",
+        "z-50 w-full bg-white",
         isStaticHeaderPage
           ? "relative"
           : cn(
@@ -140,7 +140,7 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button className="bg-cap-dark-blue hover:bg-cap-purple text-white rounded-md transition-colors text-base px-4 py-1.5 h-auto">
-                    {displayName}'s HUB
+                    {displayName}&apos;s HUB
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -197,7 +197,7 @@ export default function Header() {
                   <div className="border-t !mt-6 !mb-2"></div>
                   {isAuthenticated && user ? (
                     <>
-                      <div className="font-semibold px-1">{displayName}'s HUB</div>
+                      <div className="font-semibold px-1">{displayName}&apos;s HUB</div>
                       <Button variant="ghost" className="justify-start -mx-2" asChild>
                         <Link href="/profile">
                           <User className="mr-2 h-4 w-4" /> Tài khoản

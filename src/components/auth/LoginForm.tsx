@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -18,6 +19,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -46,10 +48,8 @@ export default function LoginForm() {
           id: loadingToast,
         });
 
-        // Redirect sang WordPress để auto login
-        window.location.href =
-          "https://course.learnwithcap.com/wp-json/custom-sso/v1/login?token=" +
-          data.token;
+        // Redirect sang /profile
+        router.push("/profile");
       } else {
         // Ném lỗi để block catch xử lý
         throw new Error(data.message || "Tên đăng nhập hoặc mật khẩu không đúng.");

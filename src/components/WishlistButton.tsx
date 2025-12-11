@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/lib/types';
@@ -22,7 +23,7 @@ interface WishlistButtonProps {
   className?: string;
 }
 
-const LOGIN_URL = "https://course.learnwithcap.com/tai-khoan/";
+const LOGIN_URL = "/login";
 
 export default function WishlistButton({ product, className }: WishlistButtonProps) {
   const { isItemInWishlist, addItem, removeItem } = useWishlist();
@@ -35,13 +36,13 @@ export default function WishlistButton({ product, className }: WishlistButtonPro
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Nếu chưa đăng nhập thì hiện popup
     if (!isLoggedIn) {
       setShowLoginDialog(true);
       return;
     }
-    
+
     if (isInWishlist) {
       removeItem(product.id);
     } else {
@@ -51,20 +52,20 @@ export default function WishlistButton({ product, className }: WishlistButtonPro
 
   return (
     <>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        onClick={handleClick} 
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleClick}
         aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
         className={cn("hover:bg-transparent transition-colors", className)}
       >
-        <Bookmark 
+        <Bookmark
           className={cn(
             "h-5 w-5 transition-all",
-            isInWishlist 
-              ? "text-cap-purple fill-cap-purple" 
+            isInWishlist
+              ? "text-cap-purple fill-cap-purple"
               : "text-gray-600 hover:text-cap-purple"
-          )} 
+          )}
         />
       </Button>
 
@@ -79,9 +80,9 @@ export default function WishlistButton({ product, className }: WishlistButtonPro
           <AlertDialogFooter>
             <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Hủy</AlertDialogCancel>
             <AlertDialogAction asChild onClick={(e) => e.stopPropagation()} className="bg-cap-dark-blue hover:bg-cap-purple text-white">
-              <a href={LOGIN_URL} target="_blank" rel="noopener noreferrer">
+              <Link href={LOGIN_URL}>
                 Đăng nhập ngay
-              </a>
+              </Link>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
