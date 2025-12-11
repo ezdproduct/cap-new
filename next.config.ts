@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  turbopack: {},
   webpack: (config) => {
     if (process.env.NODE_ENV === "development") {
       config.module.rules.push({
