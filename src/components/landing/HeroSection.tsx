@@ -14,6 +14,7 @@ export default function HeroSection() {
               loop
               muted
               playsInline
+              controls
             />
           </div>
         </div>
