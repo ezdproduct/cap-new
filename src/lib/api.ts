@@ -67,20 +67,21 @@ async function fetchWooCommerce(endpoint: string) {
 }
 
 // --- Mappers ---
-function mapCourseToProduct(course: any): Product {
+export function mapCourseToProduct(course: any): Product {
   // Logic xác định giá:
   // 1. Nếu không có giá (undefined/null) -> Free
   // 2. Nếu giá = 0 -> Free
   // 3. Nếu price_type = 'free' -> Free
 
   let isFree = false;
-  const rawPrice = course.price ? parseFloat(course.price) : 0;
+  // API /my-courses trả về giá trong `course_price`
+  const rawPrice = course.price ? parseFloat(course.price) : (course.course_price ? parseFloat(course.course_price) : 0);
 
-  if (!course.price || rawPrice === 0 || course.price_type === 'free') {
+  if (!course.price && !course.course_price || rawPrice === 0 || course.price_type === 'free') {
     isFree = true;
   }
 
-  const price = isFree ? "0" : String(course.price);
+  const price = isFree ? "0" : String(rawPrice);
   const regularPrice = course.regular_price ? String(course.regular_price) : "";
   const salePrice = course.sale_price ? String(course.sale_price) : "";
 
@@ -150,7 +151,8 @@ function mapCourseToProduct(course: any): Product {
 
   // --- Image Handling ---
   const DEFAULT_IMAGE = "https://learnwithcap.com/wp-content/uploads/2025/06/cap-logo-1.png";
-  const imageSrc = course.featured_image_url || course.thumbnail_url || DEFAULT_IMAGE;
+  // API /my-courses trả về ảnh trong `course_thumbnail`
+  const imageSrc = course.featured_image_url || course.thumbnail_url || course.course_thumbnail || DEFAULT_IMAGE;
 
   // --- New Data Extraction ---
   const totalEnrolled = course.total_enrolled || 0;
