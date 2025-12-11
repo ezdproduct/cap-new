@@ -12,32 +12,41 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
-      title: 'Course Not Found',
-      description: 'The course you are looking for could not be found.',
+      title: 'Không tìm thấy khóa học',
+      description: 'Khóa học bạn đang tìm kiếm không tồn tại.',
     };
   }
 
+  const sanitizedDescription = product.short_description.replace(/<[^>]*>?/gm, '');
+
   return {
     title: `${product.name} - CAP English`,
-    description: product.short_description,
+    description: sanitizedDescription,
     openGraph: {
       title: product.name,
-      description: product.short_description,
+      description: sanitizedDescription,
       images: [
         {
-          url: product.images[0]?.src || '',
+          url: product.images[0]?.src || 'https://learnwithcap.com/wp-content/uploads/2025/06/cap-logo-1.png',
           width: 1200,
           height: 630,
           alt: product.name,
         },
       ],
+      locale: 'vi_VN',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description: sanitizedDescription,
+      images: [product.images[0]?.src || 'https://learnwithcap.com/wp-content/uploads/2025/06/cap-logo-1.png'],
     },
   };
 }
