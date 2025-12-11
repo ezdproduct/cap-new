@@ -1,19 +1,9 @@
-"use client";
-
 import React from "react";
-import { useAuth } from "@/hooks/useAuth";
 
 export default function HeroSection() {
-  const { user, isAuthenticated } = useAuth();
-
-  const title = isAuthenticated && user ? `${user.displayName}'s Hub` : "Your's Hub";
-
   return (
     <section id="home" className="bg-white pt-20">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-cap-dark-blue">{title}</h1>
-        </div>
         <div className="relative w-full overflow-hidden rounded-2xl shadow-sm">
           {/* Tỉ lệ khung hình 16:7 (tương đối từ bản mẫu) hoặc responsive padding */}
           <div className="pt-[43.75%] relative bg-gray-100">
