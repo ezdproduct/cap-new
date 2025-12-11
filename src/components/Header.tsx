@@ -138,7 +138,7 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button className="bg-cap-dark-blue hover:bg-cap-purple text-white rounded-md transition-colors text-base px-4 py-1.5 h-auto">
-                    {user.displayName}
+                    {user.displayName}'s HUB
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -193,7 +193,7 @@ export default function Header() {
                   <div className="border-t !mt-6 !mb-2"></div>
                   {isAuthenticated && user ? (
                     <>
-                      <div className="font-semibold px-1">{user.displayName}</div>
+                      <div className="font-semibold px-1">{user.displayName}'s HUB</div>
                       <Button variant="ghost" className="justify-start -mx-2"><User className="mr-2 h-4 w-4" /> Tài khoản</Button>
                       <Button onClick={handleLogout} variant="ghost" className="justify-start -mx-2 text-red-500 hover:text-red-600"><LogOut className="mr-2 h-4 w-4" /> Đăng xuất</Button>
                     </>
