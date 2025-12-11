@@ -44,7 +44,7 @@ export default function CourseCard({ product }: CourseCardProps) {
   const categoryName = categories[0]?.name || "";
   const displayPrice = discountedPrice || price;
 
-  const productUrl = `/shop/${slug}`;
+  const productUrl = `/course/${product.slug}`;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();

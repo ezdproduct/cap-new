@@ -28,14 +28,14 @@ const StatCard = ({ title, value, icon: Icon, isLoading }: { title: string, valu
 );
 
 const AuthRequiredMessage = () => (
-    <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
-        <LogIn className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-xl font-bold text-cap-dark-blue mb-2">Yêu cầu đăng nhập</h3>
-        <p className="text-gray-500 mb-6">Vui lòng đăng nhập để xem thông tin cá nhân của bạn.</p>
-        <Button asChild className="bg-cap-purple hover:bg-cap-dark-blue">
-            <Link href="/login">Đăng nhập ngay</Link>
-        </Button>
-    </div>
+  <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
+    <LogIn className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+    <h3 className="text-xl font-bold text-cap-dark-blue mb-2">Yêu cầu đăng nhập</h3>
+    <p className="text-gray-500 mb-6">Vui lòng đăng nhập để xem thông tin cá nhân của bạn.</p>
+    <Button asChild className="bg-cap-purple hover:bg-cap-dark-blue">
+      <Link href="/login">Đăng nhập ngay</Link>
+    </Button>
+  </div>
 );
 
 export default function DashboardPage() {
@@ -52,9 +52,19 @@ export default function DashboardPage() {
           const res = await fetch('/api/profile', {
             headers: { 'Authorization': `Bearer ${token}` },
           });
+
+          if (res.status === 401) {
+            // Token expired or invalid
+            // We need to import logout, usually from hooks
+            // But hooks can't be used inside useEffect callback easily if not destructured
+            window.location.href = '/login'; // Simple fallback or use router
+            // Ideally use logout() from useAuth if stable
+            throw new Error('Unauthorized');
+          }
+
           if (!res.ok) throw new Error('Failed to fetch profile data');
           const data = await res.json();
-          
+
           const mappedCourses = data.enrolled_courses.map(mapCourseToProduct);
           setEnrolledCourses(mappedCourses);
           setStats({
@@ -63,6 +73,14 @@ export default function DashboardPage() {
           });
         } catch (error) {
           console.error(error);
+          if ((error as Error).message === 'Unauthorized') {
+            // Let the effect/hook re-run or handle logout
+            // Since we can't easily call logout() here without adding it to deps and maybe causing loops
+            // We can rely on the fact that if we redirect to login, user handles it. 
+            // Better: update useAuth to handle this or just force reload.
+            localStorage.removeItem('auth-storage'); // Force clear for now
+            window.location.href = '/login';
+          }
         } finally {
           setIsLoading(false);
         }
@@ -74,7 +92,7 @@ export default function DashboardPage() {
   }, [token, isAuthenticated]);
 
   if (!isAuthenticated && !isLoading) {
-      return <AuthRequiredMessage />;
+    return <AuthRequiredMessage />;
   }
 
   return (

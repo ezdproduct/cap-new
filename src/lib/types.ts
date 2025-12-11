@@ -33,7 +33,8 @@ export interface Product {
   requirements?: string[];
   curriculum?: {
     title: string;
-    lessons: { title: string }[];
+    duration?: string;
+    lessons: { title: string; duration?: string; type?: string }[];
   }[];
 }
 

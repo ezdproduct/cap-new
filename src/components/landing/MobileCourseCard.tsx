@@ -13,15 +13,15 @@ interface MobileCourseCardProps {
 
 const MobileCourseCard: React.FC<MobileCourseCardProps> = ({ product }) => {
   const imageUrl = product.images[0]?.src || '/placeholder.svg';
-  const productUrl = `/shop/${product.slug}`;
+  const productUrl = `/course/${product.slug}`;
 
   return (
     <Link href={productUrl} className="bg-white p-3 rounded-3xl shadow-sm border border-gray-100 flex gap-4 hover:shadow-md transition-all duration-200 cursor-pointer group">
       {/* Cột trái: Hình ảnh & Badge */}
       <div className="relative w-32 h-24 flex-shrink-0">
-        <Image 
-          src={imageUrl} 
-          alt={product.name} 
+        <Image
+          src={imageUrl}
+          alt={product.name}
           fill
           className="w-full h-full object-cover rounded-2xl"
           loading="lazy"
@@ -41,7 +41,7 @@ const MobileCourseCard: React.FC<MobileCourseCardProps> = ({ product }) => {
           <h3 className="text-gray-900 font-bold text-sm leading-tight line-clamp-2 group-hover:text-cap-purple transition-colors">
             {product.name}
           </h3>
-          
+
           {/* Metadata: Thời lượng & Lượt học viên */}
           <div className="flex items-center text-[11px] text-gray-500 mt-1.5 gap-2 flex-wrap">
             {product.duration && product.duration !== "N/A" && (
