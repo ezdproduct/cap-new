@@ -273,3 +273,24 @@ export async function getPaymentGateways(): Promise<PaymentGateway[]> {
 export async function getOrderById(id: string) {
   return await fetchWooCommerce(`/wp-json/wc/v3/orders/${id}`);
 }
+
+export async function getRelatedProducts(currentProduct: Product): Promise<Product[]> {
+  if (!currentProduct.categories || currentProduct.categories.length === 0) {
+    return [];
+  }
+
+  const allProducts = await getProducts({ per_page: 50 });
+  const currentProductCategoryIds = new Set(currentProduct.categories.map(c => c.id));
+
+  const related = allProducts.filter(product => {
+    // Exclude the current product itself
+    if (product.id === currentProduct.id) {
+      return false;
+    }
+    // Check if the product shares at least one category
+    return product.categories.some(cat => currentProductCategoryIds.has(cat.id));
+  });
+
+  // Return up to 4 related products
+  return related.slice(0, 4);
+}

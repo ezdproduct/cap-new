@@ -1,8 +1,9 @@
-import { getProductBySlug } from '@/lib/api';
+import { getProductBySlug, getRelatedProducts } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import CourseHero from '@/components/course/CourseHero';
 import CoursePurchaseCard from '@/components/course/CoursePurchaseCard';
 import CourseMainContent from '@/components/course/CourseMainContent';
+import RelatedCourses from '@/components/course/RelatedCourses';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,8 @@ export default async function ProductPage({
     notFound();
   }
 
+  const relatedProducts = await getRelatedProducts(product);
+
   return (
     <div className="bg-[#f9fafb]">
       <CourseHero product={product} />
@@ -73,6 +76,8 @@ export default async function ProductPage({
 
         </div>
       </div>
+      
+      <RelatedCourses products={relatedProducts} />
     </div>
   );
 }
