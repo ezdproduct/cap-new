@@ -7,7 +7,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { mapCourseToProduct } from '@/lib/api';
 import { Product } from '@/lib/types';
 import ProductGrid from '@/components/ProductGrid';
-import { BookOpen, CheckCircle, Award } from 'lucide-react';
+import { BookOpen, CheckCircle, Award, LogIn } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const StatCard = ({ title, value, icon: Icon, isLoading }: { title: string, value: number, icon: React.ElementType, isLoading: boolean }) => (
   <Card>
@@ -25,14 +27,25 @@ const StatCard = ({ title, value, icon: Icon, isLoading }: { title: string, valu
   </Card>
 );
 
+const AuthRequiredMessage = () => (
+    <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
+        <LogIn className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        <h3 className="text-xl font-bold text-cap-dark-blue mb-2">Yêu cầu đăng nhập</h3>
+        <p className="text-gray-500 mb-6">Vui lòng đăng nhập để xem thông tin cá nhân của bạn.</p>
+        <Button asChild className="bg-cap-purple hover:bg-cap-dark-blue">
+            <Link href="/login">Đăng nhập ngay</Link>
+        </Button>
+    </div>
+);
+
 export default function DashboardPage() {
-  const { token } = useAuth();
+  const { token, isAuthenticated } = useAuth();
   const [stats, setStats] = useState({ enrolled: 0, completed: 0 });
   const [enrolledCourses, setEnrolledCourses] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated && token) {
       const fetchProfileData = async () => {
         setIsLoading(true);
         try {
@@ -58,7 +71,11 @@ export default function DashboardPage() {
     } else {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [token, isAuthenticated]);
+
+  if (!isAuthenticated && !isLoading) {
+      return <AuthRequiredMessage />;
+  }
 
   return (
     <div>

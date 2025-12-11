@@ -6,15 +6,29 @@ import ProductGrid from '@/components/ProductGrid';
 import { Skeleton } from '@/components/ui/skeleton';
 import { mapCourseToProduct } from '@/lib/api';
 import { Product } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { LogIn } from 'lucide-react';
+
+const AuthRequiredMessage = () => (
+    <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
+        <LogIn className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        <h3 className="text-xl font-bold text-cap-dark-blue mb-2">Yêu cầu đăng nhập</h3>
+        <p className="text-gray-500 mb-6">Vui lòng đăng nhập để xem các khóa học của bạn.</p>
+        <Button asChild className="bg-cap-purple hover:bg-cap-dark-blue">
+            <Link href="/login">Đăng nhập ngay</Link>
+        </Button>
+    </div>
+);
 
 export default function MyCoursesPage() {
-  const { token } = useAuth();
+  const { token, isAuthenticated } = useAuth();
   const [enrolledCourses, setEnrolledCourses] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      const fetchEnrolledCourses = async () => {
+    const fetchEnrolledCourses = async () => {
+      if (isAuthenticated && token) {
         setIsLoading(true);
         try {
           const res = await fetch('/api/profile', {
@@ -24,17 +38,22 @@ export default function MyCoursesPage() {
           const data = await res.json();
           const mappedCourses = data.enrolled_courses.map(mapCourseToProduct);
           setEnrolledCourses(mappedCourses);
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
         } finally {
           setIsLoading(false);
         }
-      };
-      fetchEnrolledCourses();
-    } else {
-      setIsLoading(false);
-    }
-  }, [token]);
+      } else {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchEnrolledCourses();
+  }, [token, isAuthenticated]);
+
+  if (!isAuthenticated && !isLoading) {
+      return <AuthRequiredMessage />;
+  }
 
   return (
     <div>
